@@ -353,4 +353,6 @@ A：stdio 先检查 `-Dspring.profiles.active=stdio` 是否写在 `-jar` 前面�
 
 ## License
 
-本项目基于 [MIT License](LICENSE) 开源。
+本项目基于 [MIT License](https://opensource.org/license/mit) 开源，可自由使用、修改和分发（需保留版权声明）。
+
+Copyright (c) 2026 202009064
