@@ -1,0 +1,51 @@
+# ============================================
+# 网络模式配置（Streamable HTTP；想启用时，把主配置的 active 改成 sse）
+# ============================================
+# 什么是 Streamable HTTP？
+#   服务器在网络上开一个 HTTP 接口，AI 客户端远程连接它，
+#   就像打电话，客户端和服务器可以不在同一台电脑上。
+#   适合：程序部署在服务器上，多个客户端通过网络访问。
+#
+# 为什么不用旧的 SSE？MCP 在1.1.6版本以后，新规范已把 SSE 传输标记为废弃，
+# 且旧 SSE 传输拿不到请求里携带的信息，无法实现「每个客户端用自己的 Key」。
+spring:
+  ai:
+    mcp:
+      server:
+        # MCP 服务器的名字
+        name: yu-image-search-mcp-server
+        # 版本号
+        version: 0.0.1
+        # SYNC = 同步模式
+        type: SYNC
+        # 走网络时必须为 false，走本地子进程时才为 true
+        stdio: false
+        # 传输协议：SSE（旧，默认值）/ STREAMABLE（新）/ STATELESS
+        # 只有 STREAMABLE 才能读到请求里携带的 Key，进而支持「每个用户自己的 Key」
+        protocol: STREAMABLE
+        # Streamable HTTP 的接入路径（等价于旧配置里的 sse-endpoint）
+        streamable-http:
+          mcp-endpoint: /mcp
+# 注意：网络模式需要 web 功能，所以这里没有像 stdio 那样关闭 web。
+# 端口号在主配置 application.yaml 的 server.port 里（8127）。
+#
+# API Key 从哪来？优先级：客户端查询参数 ＞ 服务端环境变量
+#   1) 客户端查询参数（每个用户可以带自己的 Key）
+#        endpoint: /mcp?key=<Pexels API Key>
+#      由 StreamableTransportConfig 解析后透传给图片搜索工具。
+#      注意：Key 会出现在 URL 与访问日志里，属于安全性取舍。
+#   2) 服务端环境变量（兜底，客户端没带时使用）
+#        - 命令行/脚本：先 set PEXELS_API_KEY=xxx，再启动
+#        - Docker：docker run -e PEXELS_API_KEY=xxx ...
+#        - IDE 调试：Run Configuration -> Environment variables
+#
+# 客户端侧连接示例（Spring AI 客户端，纯配置，无需写 Java 代码）：
+#   spring:
+#     ai:
+#       mcp:
+#         client:
+#           streamable-http:
+#             connections:
+#               image-search:
+#                 url: http://localhost:8127
+#                 endpoint: /mcp?key=${PEXELS_API_KEY:}

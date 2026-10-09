@@ -1,0 +1,26 @@
+# ============================================
+# stdio 模式配置
+# ============================================
+# 什么是 stdio？
+#   程序在命令行里运行，AI 客户端通过"标准输入/输出"和它交流，
+#   就像面对面说话，不经过网络。
+#   适合：本地运行，由 AI 客户端（如 Trae、Claude）直接启动你的程序。
+spring:
+  ai:
+    mcp:
+      server:
+        # MCP 服务器的名字，客户端连接时看到的就是它
+        name: yu-image-search-mcp-server
+        # 版本号
+        version: 0.0.1
+        # SYNC = 同步模式（服务器处理完请求才返回）
+        type: SYNC
+        # 开启 stdio 传输方式
+        stdio: true
+  main:
+    # stdio 模式不走网络，所以关闭 web 功能
+    web-application-type: none
+    # 关闭启动横幅，避免多余文字干扰 stdio 通信（很重要！），比如说不要使用sout，因为stdio是一个标准的输入输出模式
+    banner-mode: off
+    # 关闭启动日志，避免多余文字干扰 stdio 通信（很重要！），比如说不要使用sout，因为stdio是一个标准的输入输出模式
+    log-startup-info: false
