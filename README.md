@@ -100,8 +100,9 @@ spring:
 
 以推荐的**方式 A** 为例（注意 `args` 的顺序）
 
-在**客户端**`application.yaml`文件里进行配置，如下：
-```json
+若你是**自建 Spring AI 客户端**（自己写 Java 程序去连这个服务），在客户端工程的 `application.yaml` 里加上：
+
+```yaml
 spring:
   ai:
     mcp:
@@ -110,7 +111,8 @@ spring:
         stdio:
           servers-configuration: classpath:mcp-servers.json
 ```
-对应的 mcp-servers.json 文件内容（Claude Desktop 格式）
+
+上面这行只是「声明去读哪个文件」，真正描述怎么拉起服务的是 `mcp-servers.json`（放在客户端工程的 `src/main/resources/` 下，Trae / Claude Desktop 通用格式）：
 ```json
 {
   "mcpServers": {
@@ -184,7 +186,9 @@ spring:
 
 **第二步：客户端配置 —— 按网址连**
 
-```json
+若你是**自建 Spring AI 客户端**，在客户端工程的 `application.yaml` 里加上：
+
+```yaml
 spring:
   ai:
     mcp:
@@ -194,8 +198,10 @@ spring:
           connections:
             image-search-mcp:
               url: http://localhost:8127
-              endpoint: /mcp?key="你的 Pexels API Key"
+              endpoint: /mcp?key=你的 Pexels API Key
 ```
+
+> 若用的是 Trae / Claude Desktop 这类通用 MCP 客户端，则改填 `url`（见方案三），格式不同但含义一致。
 
 - `url` 是服务端地址，`/mcp` 是固定接入路径。
 - `?key=` 可选：带上就用这个 Key，不带则用服务端启动时配的 Key。
